@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic-Tac-Toe Pro</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <script src="script.js"></script>
+
+
+    <div id="wallpaper-overlay"></div>
+    <canvas id="particles-canvas"></canvas>
+
+    <div class="app-container" role="main">
+        <div id="aria-announcer" class="sr-only" aria-live="assertive"></div>
+
+        <section id="screen-setup" class="screen active" aria-labelledby="setup-title">
+            <h1 id="setup-title">Tic-Tac-Toe Pro</h1>
+            
+            <div class="form-group">
+                <label for="select-mode">Game Mode</label>
+                <select id="select-mode">
+                    <option value="pve">Player vs AI (Engine)</option>
+                    <option value="pvp">Local Pass & Play</option>
+                </select>
+            </div>
+
+            <div class="form-group" id="ai-difficulty-group">
+                <label for="select-difficulty">AI Difficulty</label>
+                <select id="select-difficulty">
+                    <option value="casual">Casual Opponent</option>
+                    <option value="impossible" selected>Impossible Engine</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="select-size">Board Vector Size</label>
+                <select id="select-size">
+                    <option value="3">3 × 3 Grid (3 to win)</option>
+                    <option value="4">4 × 4 Grid (4 to win)</option>
+                    <option value="5">5 × 5 Grid (5 to win)</option>
+                    <option value="6">6 × 6 Grid (5 to win)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label id="symbol-label">Your Active Symbol</label>
+                <select id="select-symbol">
+                    <option value="X">Play as X</option>
+                    <option value="O">Play as O</option>
+                </select>
+            </div>
+
+            <div class="color-pickers">
+                <div class="form-group">
+                    <label for="color-x">X Node Matrix Color</label>
+                    <div class="color-input-wrapper">
+                        <input type="color" id="color-x" value="#ef4444">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="color-o">O Node Matrix Color</label>
+                    <div class="color-input-wrapper">
+                        <input type="color" id="color-o" value="#3b82f6">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="select-theme">Visual Engine Theme</label>
+                <select id="select-theme">
+                    <option value="system">Match System Config</option>
+                    <option value="dark">Dark Slate Protocol</option>
+                    <option value="light">High Contrast Light</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="input-wallpaper">Custom Wallpaper Matrix (Image URL)</label>
+                <input type="text" id="input-wallpaper" placeholder="https://images.unsplash.com/... or base64">
+                <button type="button" id="btn-clear-wallpaper" class="btn-secondary" style="margin-top:8px; padding:6px;">Purge Wallpaper Canvas</button>
+            </div>
+
+            <button type="button" id="btn-goto-toss" class="btn-primary">Initialize Engine Configuration</button>
+            <button type="button" id="btn-open-stats" class="btn-secondary">View Performance Metrics</button>
+        </section>
+
+        <section id="screen-toss" class="screen" aria-labelledby="toss-title">
+            <h2 id="toss-title">Coin Toss Initialization</h2>
+            <p class="status-announcer" id="toss-status">Flip to determine strategic priority</p>
+            
+            <div class="coin-container">
+                <div class="coin" id="toss-coin" aria-hidden="true">
+                    <div class="coin-side coin-front">X</div>
+                    <div class="coin-side coin-back">O</div>
+                </div>
+            </div>
+
+            <div class="history-controls">
+                <button type="button" id="btn-execute-toss" class="btn-primary">Execute Toss Sequence</button>
+                <button type="button" id="btn-confirm-toss" class="btn-secondary" disabled>Lock and Launch Match</button>
+            </div>
+        </section>
+
+        <section id="screen-game" class="screen" aria-labelledby="game-title">
+            <header class="game-header">
+                <h3 id="game-title">Execution Environment</h3>
+                <button type="button" id="btn-abort-game" class="btn-secondary" style="width:auto; padding:6px 12px;">Abort Match</button>
+            </header>
+
+            <div class="status-announcer" id="game-status" role="status">Initializing execution lines...</div>
+
+            <div class="board-container" id="board" role="grid" aria-label="Tic-Tac-Toe Board Grid"></div>
+
+            <div class="history-controls">
+                <button type="button" id="btn-history-prev" class="btn-secondary" aria-label="Step Backward in Move History">◀ Step back</button>
+                <button type="button" id="btn-history-next" class="btn-secondary" aria-label="Step Forward in Move History">Step forward ▶</button>
+            </div>
+
+            <div class="utility-bar">
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <label for="range-volume" style="white-space:nowrap;">Audio Vol</label>
+                    <input type="range" id="range-volume" min="0" max="1" step="0.1" value="0.5" style="width:80px;">
+                </div>
+                <button type="button" id="btn-toggle-mute" class="btn-secondary">Mute</button>
+            </div>
+        </section>
+    </div>
+
+    <div class="modal-overlay" id="modal-stats-overlay">
+        <div class="modal" role="dialog" aria-labelledby="modal-stats-title" aria-modal="true">
+            <h2 id="modal-stats-title">Performance Analytics</h2>
+            <div class="stats-grid">
+                <div class="stat-card"><div class="stat-val" id="stat-played">0</div><div class="stat-lbl">Played</div></div>
+                <div class="stat-card"><div class="stat-val" id="stat-wins">0</div><div class="stat-lbl">Wins</div></div>
+                <div class="stat-card"><div class="stat-val" id="stat-losses">0</div><div class="stat-lbl">Losses</div></div>
+                <div class="stat-card"><div class="stat-val" id="stat-draws">0</div><div class="stat-lbl">Draws</div></div>
+                <div class="stat-card"><div class="stat-val" id="stat-pct">0%</div><div class="stat-lbl">Win Ratio</div></div>
+                <div class="stat-card"><div class="stat-val" id="stat-streak">0</div><div class="stat-lbl">Current Streak</div></div>
+            </div>
+            <button type="button" id="btn-reset-stats" class="btn-primary" style="background:#dc2626;">Purge Statistics Cache</button>
+            <button type="button" id="btn-close-stats" class="btn-secondary">Exit Panel</button>
+        </div>
+    </div>
+
+</body>
+</html>
